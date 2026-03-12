@@ -1,0 +1,8 @@
+[mcp_servers.weblens]
+command = "node"
+args = ["/home/qzer/Desktop/work/mcp-search/dist/index.js"]
+cwd = "/home/qzer/Desktop/work/mcp-search"
+
+[mcp_servers.weblens.env]
+CHROMIUM_PATH = "/usr/bin/google-chrome"
+INSECURE_TLS = "1"

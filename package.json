@@ -1,0 +1,56 @@
+{
+  "name": "weblens-mcp",
+  "version": "0.3.0",
+  "description": "MCP server for web scraping, page rendering, and content extraction — renders any URL (including SPAs) with Playwright, extracts readable content, downloads images locally, and returns clean markdown. Built for Claude, Cursor, Copilot, and any MCP-compatible AI agent.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "weblens-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "web-scraping",
+    "web-scraper",
+    "page-renderer",
+    "content-extraction",
+    "readability",
+    "playwright",
+    "headless-browser",
+    "markdown",
+    "spa-rendering",
+    "ai-agent",
+    "claude",
+    "cursor",
+    "copilot",
+    "llm-tools"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@mozilla/readability": "^0.6.0",
+    "jsdom": "^28.1.0",
+"playwright-core": "^1.58.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
