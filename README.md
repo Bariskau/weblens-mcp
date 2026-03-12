@@ -15,7 +15,67 @@
 ### Requirements
 
 - Node.js 20 or newer
-- Chrome or Chromium installed on the system
+- Chrome or Chromium installed on the system (see install guide below)
+
+### Install Chrome / Chromium
+
+WebLens uses `playwright-core` and requires a Chrome or Chromium binary on the system. Install one for your platform:
+
+<details>
+<summary>Linux (Ubuntu / Debian)</summary>
+
+```bash
+# Option 1: Google Chrome
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+sudo apt update && sudo apt install -y google-chrome-stable
+
+# Option 2: Chromium
+sudo apt update && sudo apt install -y chromium-browser
+```
+
+Chrome path: `/usr/bin/google-chrome-stable` or `/usr/bin/chromium-browser`
+
+</details>
+
+<details>
+<summary>macOS</summary>
+
+```bash
+# Option 1: Google Chrome (if not already installed)
+brew install --cask google-chrome
+
+# Option 2: Chromium
+brew install --cask chromium
+```
+
+Chrome path: `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
+Chromium path: `/Applications/Chromium.app/Contents/MacOS/Chromium`
+
+</details>
+
+<details>
+<summary>Windows</summary>
+
+```powershell
+# Option 1: Google Chrome (if not already installed)
+winget install Google.Chrome
+
+# Option 2: Chromium
+winget install Hibbiki.Chromium
+```
+
+Chrome path: `C:\Program Files\Google\Chrome\Application\chrome.exe`
+Chromium path: `C:\Users\<YOU>\AppData\Local\Chromium\Application\chrome.exe`
+
+</details>
+
+After installing, set `CHROMIUM_PATH` if auto-detection doesn't find it:
+
+```bash
+# Example
+CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+```
 
 ### Getting started
 
