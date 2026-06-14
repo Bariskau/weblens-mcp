@@ -18,7 +18,7 @@ export class WebLensMcpServer {
   ) {
     this.server = new McpServer({
       name: "weblens-mcp",
-      version: "0.5.0"
+      version: "0.5.1"
     });
 
     this.registerTool();

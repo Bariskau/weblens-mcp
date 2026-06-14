@@ -1,6 +1,6 @@
 {
   "name": "weblens-mcp",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "MCP server for web scraping, page rendering, and content extraction — renders any URL (including SPAs) with Playwright, extracts readable content, downloads images locally, and returns clean markdown. Built for Claude, Cursor, Copilot, and any MCP-compatible AI agent.",
   "type": "module",
   "main": "dist/index.js",
