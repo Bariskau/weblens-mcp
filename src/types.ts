@@ -6,11 +6,17 @@ export interface RenderSnapshot {
   text: string;
   status: number | null;
   images: ImageCandidate[];
+  navLinks: NavLink[];
 }
 
 export interface ImageCandidate {
   url: string;
   alt: string | null;
+}
+
+export interface NavLink {
+  url: string;
+  text: string;
 }
 
 export interface StoredAsset {

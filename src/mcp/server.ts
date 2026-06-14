@@ -18,7 +18,7 @@ export class WebLensMcpServer {
   ) {
     this.server = new McpServer({
       name: "weblens-mcp",
-      version: "0.3.0"
+      version: "0.5.0"
     });
 
     this.registerTool();
@@ -43,29 +43,37 @@ export class WebLensMcpServer {
         }
       },
       async ({ url }) => {
-        await this.assetStore.sweep();
+        try {
+          await this.assetStore.sweep();
 
-        const snapshot = await this.pageRenderer.render(url);
-        const article = this.articleExtractor.extract(snapshot);
+          const snapshot = await this.pageRenderer.render(url);
+          const article = this.articleExtractor.extract(snapshot);
 
-        // Download images in parallel
-        const assetEntries = await Promise.all(
-          snapshot.images.map(async (img) => {
-            const asset = await this.assetStore.downloadImage(img.url);
-            return asset ? ([img.url, asset] as const) : null;
-          })
-        );
+          // Download images in parallel
+          const assetEntries = await Promise.all(
+            snapshot.images.map(async (img) => {
+              const asset = await this.assetStore.downloadImage(img.url);
+              return asset ? ([img.url, asset] as const) : null;
+            })
+          );
 
-        const assets = new Map<string, StoredAsset>(
-          assetEntries.filter((e): e is NonNullable<typeof e> => e !== null)
-        );
+          const assets = new Map<string, StoredAsset>(
+            assetEntries.filter((e): e is NonNullable<typeof e> => e !== null)
+          );
 
-        const markdown = this.markdownComposer.compose(snapshot, article, assets);
-        const mdPath = await this.assetStore.writeMarkdown(url, markdown);
+          const markdown = this.markdownComposer.compose(snapshot, article, assets);
+          const mdPath = await this.assetStore.writeMarkdown(url, markdown);
 
-        return {
-          content: [{ type: "text", text: mdPath }]
-        };
+          return {
+            content: [{ type: "text", text: mdPath }]
+          };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          return {
+            content: [{ type: "text", text: `fetch_page failed: ${message}` }],
+            isError: true
+          };
+        }
       }
     );
   }

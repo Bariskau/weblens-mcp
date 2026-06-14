@@ -1,5 +1,13 @@
-import { chromium, type Browser, type BrowserContext, type Page } from "playwright-core";
-import { Config } from "../config/renderlens-config.js";
+import {
+  chromium,
+  type Browser,
+  type BrowserContext,
+  type LaunchOptions,
+  type Page
+} from "playwright";
+import { Config } from "../config/config.js";
+
+const LAUNCH_ARGS = ["--disable-dev-shm-usage", "--no-sandbox"];
 
 export class BrowserManager {
   private browserPromise: Promise<Browser> | undefined;
@@ -42,12 +50,39 @@ export class BrowserManager {
 
   private async getBrowser(): Promise<Browser> {
     if (!this.browserPromise) {
-      this.browserPromise = chromium.launch({
-        executablePath: this.config.chromiumPath,
-        headless: true,
-        args: ["--disable-dev-shm-usage", "--no-sandbox"]
-      });
+      this.browserPromise = this.launchBrowser();
     }
     return this.browserPromise;
+  }
+
+  /**
+   * Launch Chromium. An explicit CHROMIUM_PATH wins; otherwise we use
+   * Playwright's bundled browser (auto-installed on `npm install`), and only
+   * fall back to a system Chrome if the bundled browser is unavailable.
+   */
+  private async launchBrowser(): Promise<Browser> {
+    const explicit = this.config.explicitChromiumPath();
+    if (explicit) {
+      return chromium.launch(this.launchOptions(explicit));
+    }
+
+    try {
+      return await chromium.launch(this.launchOptions());
+    } catch (bundledError) {
+      const systemChrome = this.config.detectSystemChrome();
+      if (systemChrome) {
+        return chromium.launch(this.launchOptions(systemChrome));
+      }
+      throw new Error(
+        "Could not launch Chromium. Run `npx playwright install chromium`, or " +
+          "set CHROMIUM_PATH to a Chrome/Chromium executable. " +
+          `(${bundledError instanceof Error ? bundledError.message : String(bundledError)})`
+      );
+    }
+  }
+
+  private launchOptions(executablePath?: string): LaunchOptions {
+    const options: LaunchOptions = { headless: true, args: LAUNCH_ARGS };
+    return executablePath ? { ...options, executablePath } : options;
   }
 }

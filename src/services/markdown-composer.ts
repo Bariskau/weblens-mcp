@@ -1,4 +1,9 @@
-import type { ArticleSnapshot, RenderSnapshot, StoredAsset } from "../types.js";
+import type {
+  ArticleSnapshot,
+  NavLink,
+  RenderSnapshot,
+  StoredAsset
+} from "../types.js";
 
 export class MarkdownComposer {
   compose(
@@ -6,42 +11,60 @@ export class MarkdownComposer {
     article: ArticleSnapshot | null,
     assets: Map<string, StoredAsset>
   ): string {
-    const lines: string[] = [];
+    const sections = [
+      this.heading(snapshot, article),
+      this.excerpt(article),
+      this.body(snapshot, article),
+      this.navigation(snapshot.navLinks),
+      this.imageGallery(snapshot, assets)
+    ];
+
+    return sections.filter((section) => section.length > 0).join("\n\n");
+  }
+
+  private heading(
+    snapshot: RenderSnapshot,
+    article: ArticleSnapshot | null
+  ): string {
     const title = article?.title ?? snapshot.title ?? "Untitled";
+    return `# ${title}\n\nSource: ${snapshot.finalUrl}`;
+  }
 
-    lines.push(`# ${title}`);
-    lines.push("");
-    lines.push(`Source: ${snapshot.finalUrl}`);
+  private excerpt(article: ArticleSnapshot | null): string {
+    return article?.excerpt ? `> ${article.excerpt}` : "";
+  }
 
-    if (article?.excerpt) {
-      lines.push("");
-      lines.push(`> ${article.excerpt}`);
-    }
+  private body(
+    snapshot: RenderSnapshot,
+    article: ArticleSnapshot | null
+  ): string {
+    const text = article?.textContent ?? snapshot.text;
+    return text ? this.normalizeText(text) : "";
+  }
 
-    const body = article?.textContent ?? snapshot.text;
-    if (body) {
-      lines.push("");
-      lines.push(this.normalizeText(body));
-    }
+  private navigation(navLinks: NavLink[]): string {
+    if (navLinks.length === 0) return "";
+    const items = navLinks.map((link) => `- [${link.text}](${link.url})`);
+    return ["## Navigation", "", ...items].join("\n");
+  }
 
-    if (assets.size > 0) {
-      lines.push("");
-      lines.push("## Images");
-      lines.push("");
-      for (const [url, asset] of assets) {
-        const alt = snapshot.images.find((i) => i.url === url)?.alt ?? "image";
-        lines.push(`![${alt}](${asset.localPath})`);
-      }
-    }
-
-    return lines.join("\n");
+  private imageGallery(
+    snapshot: RenderSnapshot,
+    assets: Map<string, StoredAsset>
+  ): string {
+    if (assets.size === 0) return "";
+    const items = [...assets].map(([url, asset]) => {
+      const alt = snapshot.images.find((image) => image.url === url)?.alt ?? "image";
+      return `![${alt}](${asset.localPath})`;
+    });
+    return ["## Images", "", ...items].join("\n");
   }
 
   private normalizeText(value: string): string {
     return value
       .split(/\n{2,}/)
-      .map((p) => p.replace(/\s+\n/g, "\n").trim())
-      .filter((p) => p.length > 0)
+      .map((paragraph) => paragraph.replace(/\s+\n/g, "\n").trim())
+      .filter((paragraph) => paragraph.length > 0)
       .join("\n\n");
   }
 }

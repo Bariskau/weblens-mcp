@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { Config } from "../config/renderlens-config.js";
+import { Config } from "../config/config.js";
 import type { StoredAsset } from "../types.js";
 
 export class AssetStore {

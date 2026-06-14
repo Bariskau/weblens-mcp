@@ -3,8 +3,8 @@
 import process from "node:process";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { BrowserManager } from "./browser/browser-manager.js";
-import { Config } from "./config/renderlens-config.js";
-import { WebLensMcpServer } from "./mcp/renderlens-mcp-server.js";
+import { Config } from "./config/config.js";
+import { WebLensMcpServer } from "./mcp/server.js";
 import { ArticleExtractor } from "./services/article-extractor.js";
 import { AssetStore } from "./services/asset-store.js";
 import { MarkdownComposer } from "./services/markdown-composer.js";
