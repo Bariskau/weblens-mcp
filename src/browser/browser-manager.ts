@@ -35,7 +35,10 @@ export class BrowserManager {
 
   private async getContext(): Promise<BrowserContext> {
     if (!this.contextPromise) {
-      this.contextPromise = this.createContext();
+      this.contextPromise = this.createContext().catch((error) => {
+        this.contextPromise = undefined; // don't cache a failed launch
+        throw error;
+      });
     }
     return this.contextPromise;
   }
@@ -50,7 +53,10 @@ export class BrowserManager {
 
   private async getBrowser(): Promise<Browser> {
     if (!this.browserPromise) {
-      this.browserPromise = this.launchBrowser();
+      this.browserPromise = this.launchBrowser().catch((error) => {
+        this.browserPromise = undefined; // don't cache a failed launch
+        throw error;
+      });
     }
     return this.browserPromise;
   }
@@ -67,18 +73,26 @@ export class BrowserManager {
     }
 
     try {
-      return await chromium.launch(this.launchOptions());
+      return await chromium.launch(this.launchOptions()); // bundled Chromium
     } catch (bundledError) {
-      const systemChrome = this.config.detectSystemChrome();
-      if (systemChrome) {
-        return chromium.launch(this.launchOptions(systemChrome));
-      }
-      throw new Error(
-        "Could not launch Chromium. Run `npx playwright install chromium`, or " +
-          "set CHROMIUM_PATH to a Chrome/Chromium executable. " +
-          `(${bundledError instanceof Error ? bundledError.message : String(bundledError)})`
-      );
+      return this.launchSystemChrome(bundledError);
     }
+  }
+
+  /** Try each detected system browser in turn; throw a helpful error if none launch. */
+  private async launchSystemChrome(bundledError: unknown): Promise<Browser> {
+    for (const executablePath of this.config.detectSystemChromes()) {
+      try {
+        return await chromium.launch(this.launchOptions(executablePath));
+      } catch {
+        // Present on disk but not launchable — try the next candidate.
+      }
+    }
+    throw new Error(
+      "Could not launch Chromium. Run `npx playwright install chromium`, or " +
+        "set CHROMIUM_PATH to a Chrome/Chromium executable. " +
+        `(${bundledError instanceof Error ? bundledError.message : String(bundledError)})`
+    );
   }
 
   private launchOptions(executablePath?: string): LaunchOptions {

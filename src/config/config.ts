@@ -70,8 +70,8 @@ export class Config {
     return explicit;
   }
 
-  /** First Chrome/Chromium/Edge in a standard OS install location, if any. */
-  detectSystemChrome(): string | undefined {
-    return chromeCandidates(this.env).find((candidate) => existsSync(candidate));
+  /** Chrome/Chromium/Edge executables found in standard OS install locations. */
+  detectSystemChromes(): string[] {
+    return chromeCandidates(this.env).filter((candidate) => existsSync(candidate));
   }
 }

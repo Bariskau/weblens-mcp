@@ -10,7 +10,7 @@
 - **Bundled browser** — Chromium is auto-installed by Playwright; no system Chrome required
 - **Markdown output** — returns a local `.md` file path with images embedded as local paths
 - **Article extraction** — uses [Mozilla Readability](https://github.com/mozilla/readability) for clean content
-- **Navigation links** — captures the site's menu/sidebar/header links (same-site, deduped)
+- **Navigation links** — captures the site's menu/sidebar/header links (same-host, deduped)
 - **Asset download** — page images are downloaded to a local tmp directory automatically
 - **Auto cleanup** — downloaded files are purged after 6 hours
 
@@ -172,7 +172,7 @@ Article body text content...
 - Renders the page with Playwright (headless Chromium)
 - Blocks media and font requests for faster loading
 - Extracts article content using Mozilla Readability when possible
-- Captures navigation links from `nav`/`header`/`aside`/menu regions (same-site, deduped, up to 50)
+- Captures navigation links from `nav`/`header`/`aside`/menu regions (same-host, deduped, up to 50)
 - Downloads page images (skips icons smaller than 50x50px)
 - Writes markdown with local image paths to the system temp dir (`<os-tmp>/weblens-mcp/`)
 - Files older than 6 hours are automatically cleaned up

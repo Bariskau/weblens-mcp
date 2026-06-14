@@ -10,7 +10,7 @@ interface ExtractLimits {
 /**
  * Runs inside the rendered page (serialized by Playwright), so it must be
  * self-contained — no references to module scope. Collects the page title,
- * full HTML, visible text, content images, and same-site navigation links.
+ * full HTML, visible text, content images, and same-host navigation links.
  */
 function extractInPage(limits: ExtractLimits) {
   const NAV_REGION_SELECTOR =
